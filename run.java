@@ -1,14 +1,8 @@
 package ccim.iar.ui.main;
 
 
-//import some java package class to use their function for our convenience
-import java.io.FileInputStream; // https://www.tutorialspoint.com/java/io/java_io_fileinputstream.htm
-import java.io.InputStream;     // https://www.tutorialspoint.com/java/io/inputstream_read.htm
 import java.util.ArrayList;     // https://www.tutorialspoint.com/java/util/java_util_arraylist.htm
 import java.util.Date;			// https://www.tutorialspoint.com/java/util/java_util_arraylist.htm
-import java.util.Properties;	// https://www.tutorialspoint.com/java/util/java_util_properties.htm
-
-
 import org.apache.logging.log4j.LogManager;   		//https://l;ogging.apache.org/log4j/2.x/log4j-api/apidocs/org/apache/logging/log4j/LogManager.html
 													// examples: http://www.programcreek.com/java-api-examples/index.php?api=org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger;
@@ -24,30 +18,28 @@ import ccim.iar.ui.screen.util;
 
 public class run {
 
-	public static Properties config_properties = new Properties(); // define config_properties to be of the tyoe Properties
+	//public static Properties config_properties = new Properties(); // define config_properties to be of the tyoe Properties
 	private static final Logger log = LogManager.getLogger(run.class); // reason for private final variable is that it CANNOT be accessed from any anonymous inner subclass
 
 	public static void main(String[] args) throws Exception { //THROWS: any excewption that;s thrown out must be specifies
-															  //it is a checked exception and if you don't handle that particular exception, it must be specified in the throws clause, 
-		String configfile = args[0];  // args[] contains the supplied command-line arguments as an array or string objects
-									  // define string (type) configfile to be the first command line
+															  
 		
-		InputStream input = new FileInputStream(configfile); // this calls config.properties to get the input
+		//InputStream input = new FileInputStream(configfile); // this calls config.properties to get the input
 															// This creates a FileInputStream by opening a connection to an actual file (config.properties) named by the path name configfile in the file system.
 		
-		config_properties.load(input); // first we defined the property (line: public static Properties config_properties = new Properties(); )
+		//config_properties.load(input); // first we defined the property (line: public static Properties config_properties = new Properties(); )
 									   // then we import the file (line: InputStream input = new FileInputStream(configfile))
 									   // loan the data from the file to a defined variable (line config_properties.load(input);)
 									   // then close it by next line
-		input.close();
+		//input.close();
 
 		// define more public variables who are the input from the file we input
-		int testDurationMinutes = Integer.parseInt(config_properties.getProperty("test.duration")); 
-		int testCycles = Integer.parseInt(config_properties.getProperty("test.cycles"));
+		int testDurationMinutes = 10; 
+		int testCycles = 5;
 		// refer to the  util class, and call the function with the class util using the input
-		util.thinkTime = Integer.parseInt(config_properties.getProperty("think.time"));
-		util.screenshotFolder = config_properties.getProperty("screenshot.folder");
-		util.takeScreenshot = util.getBoolean(config_properties.getProperty("take.screenshots"), false);
+		util.thinkTime = 0;
+		util.screenshotFolder ="screenshots";
+		util.takeScreenshot = util.getBoolean("no", false);
 		
 		// this log.info creates the logs below in the console window
 		log.info("Starting test case_" + (new Date()));
@@ -55,7 +47,8 @@ public class run {
 		
 		// set the property of the system 
 		// webdriver.ie.driver is now set to whatever the input is after webdriver.ie.driver= (in config.properties)
-		System.setProperty("webdriver.ie.driver", config_properties.getProperty("webdriver.ie.driver"));
+		System.setProperty("webdriver.ie.driver", "C:/Selenium_test_case/cmdline/Selenium/DriverServer/IEDriverServerWin32.exe");
+		
 		WebDriver driver = new InternetExplorerDriver();
 
 		try {
@@ -68,23 +61,22 @@ public class run {
 
 		//* user login
 		// using the function in user.java
-		user.login(driver, config_properties.getProperty("portal.domain"),
-				config_properties.getProperty("portal.username"), config_properties.getProperty("portal.password"));
+		user.login(driver,"10.21.202.123","Serena", " ");
 		util.takeScreenshot(driver, "user.login");
 
 		//* person search
 		// using the function in Person,java 
 		SearchCriteria sc = new SearchCriteria();
-		sc.addField(SearchCriteria.USE_HCN, config_properties.getProperty("search.use_hcn"));
-		sc.addField(SearchCriteria.HCN, config_properties.getProperty("search.hcn"));
-		sc.addField(SearchCriteria.LAST_NAME, config_properties.getProperty("search.last_name"));
-		sc.addField(SearchCriteria.FIRST_NAME, config_properties.getProperty("search.first_name"));
-		sc.addField(SearchCriteria.DOB, config_properties.getProperty("search.dob"));
-		sc.addField(SearchCriteria.SEX, config_properties.getProperty("search.sex"));
-		sc.addField(SearchCriteria.STREET, config_properties.getProperty("search.street"));
-		sc.addField(SearchCriteria.POSTAL_CODE, config_properties.getProperty("search.postal_code"));
-		sc.addField(SearchCriteria.UNIT, config_properties.getProperty("search.unit"));
-		sc.addField(SearchCriteria.PHONE, config_properties.getProperty("search.phone"));
+		sc.addField(SearchCriteria.USE_HCN, "YES");
+		sc.addField(SearchCriteria.HCN, "8058101455");
+		sc.addField(SearchCriteria.LAST_NAME, "Skova");
+		sc.addField(SearchCriteria.FIRST_NAME, "Linele");
+		sc.addField(SearchCriteria.DOB, "30-Apr-1980");
+		sc.addField(SearchCriteria.SEX, "F");
+		sc.addField(SearchCriteria.STREET,"37 Linele Street");
+		sc.addField(SearchCriteria.POSTAL_CODE, "Y2N 6L2");
+		sc.addField(SearchCriteria.UNIT, "211");
+		sc.addField(SearchCriteria.PHONE, "411-678-975");
 		
 		// make the change in the system 
 		// name the current time as starttime, notes thie returns the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC(coordinated universal time).
