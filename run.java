@@ -7,7 +7,15 @@ import org.apache.logging.log4j.LogManager;   		//https://l;ogging.apache.org/lo
 													// examples: http://www.programcreek.com/java-api-examples/index.php?api=org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+
+
+ 
+
 
 // import other classes we wrote so we can call them    
 import ccim.iar.ui.screen.Assessment;
@@ -47,9 +55,10 @@ public class run {
 		
 		// set the property of the system 
 		// webdriver.ie.driver is now set to whatever the input is after webdriver.ie.driver= (in config.properties)
-		System.setProperty("webdriver.ie.driver", "C:/Selenium_test_case/cmdline/Selenium/DriverServer/IEDriverServerWin32.exe");
-		
-		WebDriver driver = new InternetExplorerDriver();
+		System.setProperty("webdriver.chrome.driver", "C:/Selenium_test_case/cmdline/Selenium/DriverServer/IEDriverServerWin32.exe");
+
+
+		WebDriver driver=new ChromeDriver();
 
 		try {
 			
@@ -61,7 +70,7 @@ public class run {
 
 		//* user login
 		// using the function in user.java
-		user.login(driver,"10.21.202.123","Serena", " ");
+		user.login(driver,"10.21.202.123","Serena", "Seren@2017");
 		util.takeScreenshot(driver, "user.login");
 
 		//* person search
@@ -91,31 +100,32 @@ public class run {
 		util.takeScreenshot(driver, "person.search");
 
 		if (persons > 0) {
+			//if we find anyone
 
 			// person details
 			ArrayList<ArrayList<String>> assessmentList = person.getDetails(driver, 0);
 			util.takeScreenshot(driver, "person.details");
 
-			int assessments = assessmentList.size();
+			int totalassessments = assessmentList.size();
 
-			if (assessments > 0) {
-
-				// start test case cycles
+			if (totalassessments > 0) //there is at least one assessment
+				{
+				// starts test case cycles
 				String details = Assessment.DETAIL;
-				for (int iCycle = 0; iCycle < testCycles; iCycle++) {
+				for (int testi = 0; testi < totalassessments; testi++) {
 
 					long currentTime = System.currentTimeMillis();
-					log.debug("Cycle = " + (iCycle + 1) + ", time to finish (sec) = " + (endTime - currentTime) / 1000);
+					log.debug("test(" + (testi + 1) + "), time to finish (sec) = " + (endTime - currentTime) / 1000);
 					if (currentTime > endTime)
 						break;
-					int irow = iCycle % assessments;
-					int count = assessmentList.get(irow).size(); // 5,6,7
+	 				int irow = testi % totalassessments;
+		//			int count = assessmentList.get(irow).size(); // 5,6,7
 
 					details = (details == Assessment.DETAIL) ? details = Assessment.SUMMARY
-							: (details == Assessment.SUMMARY && count == 7) ? Assessment.OUTCOMES : Assessment.DETAIL;
-					assessment.view(driver, irow, details);
+							: (details == Assessment.SUMMARY && testi== 7) ? Assessment.OUTCOMES : Assessment.DETAIL;
+					assessment.view(driver,irow, details);
 
-					util.takeScreenshot(driver, "view." + details + "_cycle_" + (iCycle + 1));
+					//util.takeScreenshot(driver, "view." + details + "_cycle_" + (iCycle + 1));
 					assessment.backToAssessmentListing(driver);
 				}
 			}
@@ -132,6 +142,7 @@ public class run {
 		} catch (Exception ex) {
 			log.error("Exception: " + ex.getMessage());
 			log.error(ex);
+
 			driver.quit();
 		}
 
